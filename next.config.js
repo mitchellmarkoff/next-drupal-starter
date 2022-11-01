@@ -22,6 +22,7 @@ if (
 
 if (process.env.FRONTEND_URL === undefined) {
 	console.log('here')
+	console.log('new build')
 	process.env.FRONTEND_URL = process.env.PANTHEON_ENVIRONMENT_URL
 		? process.env.PANTHEON_ENVIRONMENT_URL
 		: undefined;
