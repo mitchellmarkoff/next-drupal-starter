@@ -21,9 +21,8 @@ if (
 }
 
 if (
-	
 	process.env.FRONTEND_URL === undefined &&
-	process.env.PANTHEON_ENVIRONMENT_URL !== undefined
+	process.env.PANTHEON_ENVIRONMENT_URL
 ) {
 	console.log('here')
 	process.env.FRONTEND_URL = process.env.PANTHEON_ENVIRONMENT_URL;
