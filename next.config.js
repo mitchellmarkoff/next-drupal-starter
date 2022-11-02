@@ -20,13 +20,13 @@ if (
 	throw new Error(message);
 }
 
-if (process.env.FRONTEND_URL === undefined) {
+if (
+	
+	process.env.FRONTEND_URL === undefined &&
+	process.env.PANTHEON_ENVIRONMENT_URL !== undefined
+) {
 	console.log('here')
-	console.log('new build')
-	process.env.FRONTEND_URL = process.env.PANTHEON_ENVIRONMENT_URL
-		? process.env.PANTHEON_ENVIRONMENT_URL
-		: undefined;
-	console.log(process.env.FRONTEND_URL)
+	process.env.FRONTEND_URL = process.env.PANTHEON_ENVIRONMENT_URL;
 } else {
 	console.log('not here')
 }
