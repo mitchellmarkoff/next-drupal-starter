@@ -28,7 +28,7 @@ if (
 	console.log('here')
 	process.env.FRONTEND_URL = process.env.PANTHEON_ENVIRONMENT_URL;
 } else {
-	console.log('not here')
+	console.log('not')
 }
 
 let backendUrl, imageDomain;
