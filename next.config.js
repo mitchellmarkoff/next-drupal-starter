@@ -20,14 +20,12 @@ if (
 	throw new Error(message);
 }
 
+// if the FRONTEND_URL is not set, fallback to the PANTHEON_ENVIRONMENT_URL
 if (
 	process.env.FRONTEND_URL === undefined &&
 	process.env.PANTHEON_ENVIRONMENT_URL
 ) {
-	console.log('here')
 	process.env.FRONTEND_URL = process.env.PANTHEON_ENVIRONMENT_URL;
-} else {
-	console.log('not')
 }
 
 let backendUrl, imageDomain;
