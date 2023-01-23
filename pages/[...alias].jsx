@@ -1,8 +1,4 @@
-import {
-	getCurrentLocaleStore,
-	globalDrupalStateStores,
-	globalDrupalStateAuthStores,
-} from '../lib/stores';
+import { getCurrentLocaleStore, globalDrupalStateStores } from '../lib/stores';
 import { getPreview } from '../lib/getPreview';
 import { translatePath } from '@pantheon-systems/drupal-kit';
 import { NextSeo } from 'next-seo';
@@ -23,17 +19,17 @@ export default function CatchAllRoute({
 		if (pageData?.type === 'node--page') {
 			const {
 				title,
-				body: { value },
+				body: { processed },
 			} = pageData;
 			return (
 				<>
 					<article className="prose lg:prose-xl mt-10 mx-auto">
 						<h1>{title}</h1>
-						<Link passHref href="/pages">
-							<a className="font-normal">Pages &rarr;</a>
+						<Link passHref href="/pages" className="font-normal">
+							Pages &rarr;
 						</Link>
 						<div className="mt-12 max-w-lg mx-auto lg:grid-cols-3 lg:max-w-screen-lg">
-							<div dangerouslySetInnerHTML={{ __html: value }} />
+							<div dangerouslySetInnerHTML={{ __html: processed }} />
 						</div>
 					</article>
 				</>
@@ -43,7 +39,7 @@ export default function CatchAllRoute({
 		if (pageData?.type === 'node--article') {
 			const {
 				title,
-				body: { value },
+				body: { processed },
 				field_media_image,
 				thumbnail,
 			} = pageData;
@@ -52,7 +48,7 @@ export default function CatchAllRoute({
 			return (
 				<ContentWithImage
 					title={title}
-					content={value}
+					content={processed}
 					imageProps={
 						imgSrc
 							? {
@@ -127,10 +123,7 @@ export async function getServerSideProps(context) {
 		});
 		const lang = context.preview ? context.previewData.previewLang : locale;
 
-		const store = getCurrentLocaleStore(
-			lang,
-			context.preview ? globalDrupalStateAuthStores : globalDrupalStateStores,
-		);
+		const store = getCurrentLocaleStore(lang, globalDrupalStateStores);
 
 		// get the path from the params
 		const path = Array.isArray(alias) ? alias.join('/') : alias;
@@ -154,6 +147,15 @@ export async function getServerSideProps(context) {
 		const previewParams =
 			context.preview && (await getPreview(context, resourceName, params));
 
+		if (previewParams?.error) {
+			return {
+				redirect: {
+					destination: previewParams.redirect,
+					permanent: false,
+				},
+			};
+		}
+
 		// fetch page data
 		const pageData = await store.getObject({
 			objectName: resourceName,
@@ -161,12 +163,14 @@ export async function getServerSideProps(context) {
 			params: context.preview ? previewParams : params,
 			refresh: true,
 			res: context.res,
+			anon: context.preview ? false : true,
 		});
 
 		const footerMenu = await store.getObject({
 			objectName: 'menu_items--main',
 			refresh: true,
 			res: context.res,
+			anon: true,
 		});
 		return {
 			props: {
